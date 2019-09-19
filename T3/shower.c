@@ -1,11 +1,12 @@
 // gcc shower.c -lglut -lGL -lGLU -lm
-
+#include <unistd.h>
 #include <GL/glut.h>
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <stdio.h>
 
-#define MAX_FLOCOS 500
+#define MAX_GOTAS 1000
 #define PI 3.1415
 
 // Rotation amounts
@@ -19,7 +20,7 @@ typedef struct floco {
 	float vel;
 } Floco;
 
-Floco gotas[MAX_FLOCOS];
+Floco gotas[MAX_GOTAS];
 
 void cilinderRounded(GLUquadric* quad, GLdouble base, GLdouble top, GLdouble height){
 
@@ -66,15 +67,14 @@ void init(){
 	int i;
 	srand(time(NULL));
 	
-	for(i=0; i<MAX_FLOCOS; i++){
+	for(i=0; i<MAX_GOTAS; i++){
 		// Gerar um x aleatorio
-		float x = (float) (1.0 / ((rand() % 11) - 5));
+		float x = (float) (rand() % 12)/100;
 		x *= (rand() % 2 ? 1 : -1);
-	
-		float y = (float) (1.0 / ((rand() % 11) + 1));
-		y *= (rand() % 2 ? 1 : -1);
 
-		float z = (float) (1.0 / ((rand() % 11) - 5));
+		float y = (float) (rand() % 86) /100;
+
+		float z = (float) (rand() % 12) /100;
 		z *= (rand() % 2 ? 1 : -1);
 
 		gotas[i].pos[0] = x;
@@ -83,6 +83,8 @@ void init(){
 
 		float v = (float) (1.0 / ((rand() % 50) + 100));
 		gotas[i].vel = v;
+
+		printf("\nx: %f - y: %f - z: %f - v: %f", x,y,z,v);
 	}
 }
 
@@ -116,41 +118,46 @@ void OnDisplay(void){
 	glRotatef(90, 1.0f, 0.0f, 0.0f);
 	cilinderRounded( pObj, radius*0.02f, radius*0.02f, 0.05f );
 	gluCylinder(pObj, radius*0.02f, radius*0.15f, 0.1f, 50, 25);
-	
-	glPopMatrix();
-	// -2
-	
-    glPopMatrix();
 
 	// gotas
 	glPushMatrix();
 
 	glTranslatef(0.0f, 0.0f, 0.1f);
-	glColor4f(1.0f, 1.0f, 1.0f, 0.2f);	
+	glRotatef(-90, 1.0f, 0.0f, 0.0f);
+	glColor3f(52.0/255.0f, 235.0/255.0f, 222.0/255.0f);	
 	int i;
 
 	//PAREI AQUI
 
-	for(i=0; i<MAX_FLOCOS; i++){
+	for(i=0; i<MAX_GOTAS; i++){
 		glPushMatrix();
+		//sleep(rand() % 2);
 		glTranslatef(gotas[i].pos[0], gotas[i].pos[1], gotas[i].pos[2]);
-		gluSphere(pObj, 0.02f, 12, 6);
+
+		if( gotas[i].pos[1] <= 0 )
+			gluSphere(pObj, 0.005f,12 , 6);
+
 		gotas[i].pos[1] -= gotas[i].vel;
-		gotas[i].pos[0] += sin(angle)*0.001f;
-		gotas[i].pos[0] += cos(i)*0.001f;
-		if(gotas[i].pos[1] < -2.5)
-			gotas[i].pos[1] = 0.5;
-		if(gotas[i].pos[0] < -2 || gotas[i].pos[0] > 2){
-			gotas[i].pos[0] *= -1;
-			if(gotas[i].pos[0] >= 2)
-				gotas[i].pos[0] -= 0.3;
-			else if(gotas[i].pos[0] <= -2)
-				gotas[i].pos[0] += 0.3;
-		}
+		// gotas[i].pos[0] += sin(angle)*0.001f;
+		// gotas[i].pos[0] += cos(i)*0.001f;
+		if(gotas[i].pos[1] < -0.85f)
+			gotas[i].pos[1] = 0.0;
+		// if(gotas[i].pos[0] < -2 || gotas[i].pos[0] > 2){
+		// 	gotas[i].pos[0] *= -1;
+		// 	if(gotas[i].pos[0] >= 2)
+		// 		gotas[i].pos[0] -= 0.3;
+		// 	else if(gotas[i].pos[0] <= -2)
+		// 		gotas[i].pos[0] += 0.3;
+		// }
 		glPopMatrix();
 	}
 	angle+=0.1f;
 	glPopMatrix();
+	
+	glPopMatrix();
+	// -2
+	
+    glPopMatrix();
 	
     // Buffer swap
     glutSwapBuffers();
