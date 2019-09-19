@@ -135,7 +135,7 @@ void OnDisplay(void){
 		glTranslatef(gotas[i].pos[0], gotas[i].pos[1], gotas[i].pos[2]);
 
 		if( gotas[i].pos[1] <= 0 )
-			gluSphere(pObj, 0.005f,12 , 6);
+			gluSphere(pObj, 0.005f + ((float) (rand() % 4) / 1000),12 , 6);
 
 		gotas[i].pos[1] -= gotas[i].vel;
 		// gotas[i].pos[0] += sin(angle)*0.001f;
