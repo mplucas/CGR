@@ -1,5 +1,4 @@
-// gcc snowman.c -lglut -lGL -lGLU -lm -o snowman && ./snowman
-
+// gcc main.c -lglut -lGL -lGLU -lm
 #include <GL/glut.h>
 #include <stdlib.h>
 #include <time.h>
@@ -83,134 +82,174 @@ void OnDisplay(void){
     // +1
     glPushMatrix();
 
-	// Move object back and do in place rotation
-	glTranslatef(0.0f, 0.0f, -5.0f);
-	glRotatef(xRot, 1.0f, 0.0f, 0.0f);
-	glRotatef(yRot, 0.0f, 1.0f, 0.0f);
+        // Move object back and do in place rotation
+        glTranslatef(0.0f, 0.0f, -5.0f);
+        glRotatef(xRot, 1.0f, 0.0f, 0.0f);
+        glRotatef(yRot, 0.0f, 1.0f, 0.0f);
 
-	//gluQuadricNormals(pObj, GLU_SMOOTH);
+        // vestido tronco
+        glPushMatrix();
 
-	// Cabeça
-	// +2
-	glPushMatrix();
-	glColor3f(1.0f, 153.0/255.0f, 204.0/255.0f);
-	gluSphere(pObj, radius*0.3f, 50, 25);
+            glColor3f(204.0/255.0f, .0f, 68.0/255.0f);
+            glTranslatef(0.0f, -radius*0.25f, 0.0f);
+            glRotatef(90, 1.0f, 0.0f, 0.0f);
+            gluCylinder(pObj, radius*0.15f, radius*0.3f, 0.4f, 50, 25);
 
-    // nariz
-    glTranslatef(0.0f, 0.1f, 0.0f);
-    gluCylinder(pObj, radius*0.2f, radius*0.15f, 0.45f, 50, 25);
-    glTranslatef(0.0f, 0.0f, 0.45f);
-    gluDisk(pObj, 0.0, radius*0.15f, 300, 90);
-    
-    // narina direita
-	glColor3f(.0f, .0f, .0f);
-    glTranslatef(.07f, 0.02f, 0.01f);
-    gluDisk(pObj, 0.0, radius*0.03, 300, 90);
+            // Cabeça
+            glPushMatrix();
 
-    // narina esquerda
-    glTranslatef(-.14f, 0.0f, 0.0f);
-    gluDisk(pObj, 0.0, radius*0.03, 300, 90);
+                glRotatef(-90, 1.0f, 0.0f, 0.0f);
+                glTranslatef(0.0f, radius*0.25f, 0.0f);
+                glColor3f(1.0f, 153.0/255.0f, 204.0/255.0f);
+                gluSphere(pObj, radius*0.3f, 50, 25);
 
-	glPopMatrix();
-    // -2
+                // nariz
+                glPushMatrix();
 
-    glPushMatrix();
+                    glTranslatef(0.0f, 0.1f, 0.0f);
+                    gluCylinder(pObj, radius*0.2f, radius*0.15f, 0.45f, 50, 25);
+                    glTranslatef(0.0f, 0.0f, 0.45f);
+                    gluDisk(pObj, 0.0, radius*0.15f, 300, 90);
+                
+                    // narina direita
+                    glColor3f(.0f, .0f, .0f);
+                    glTranslatef(.07f, 0.02f, 0.01f);
+                    gluDisk(pObj, 0.0, radius*0.03, 300, 90);
 
-    // vestido
-    glColor3f(204.0/255.0f, .0f, 68.0/255.0f);
-    glTranslatef(0.0f, -radius*0.25f, 0.0f);
-    glRotatef(90, 1.0f, 0.0f, 0.0f);
-    gluCylinder(pObj, radius*0.15f, radius*0.3f, 0.4f, 50, 25);
+                    // narina esquerda
+                    glTranslatef(-.14f, 0.0f, 0.0f);
+                    gluDisk(pObj, 0.0, radius*0.03, 300, 90);
 
-    // pernas
-    glColor3f(1.0f, 153.0/255.0f, 204.0/255.0f);
-    glTranslatef(.07f, 0.0f, 0.4f);
-    gluCylinder(pObj, radius*0.025f, radius*0.015f, 0.13f, 50, 25);
-    glTranslatef(-.14f, 0.0f, 0.0f);
-    gluCylinder(pObj, radius*0.025f, radius*0.015f, 0.13f, 50, 25);
+                glPopMatrix();
 
-    // pés
-    // direito
-    glColor3f(102.0/255.0f, 51.0/255.0f, 0.0f);
-    glRotatef(-90, 1.0f, 0.0f, 0.0f);
-    glTranslatef(.0f, -.13f, -.02f);
-    gluSphere(pObj, radius*0.02f, 50, 25);
-    cilinderRounded( pObj, radius*0.02f, radius*0.025f, 0.15f );
+                // olho esquerdo
+                glPushMatrix();
 
-    //esquerdo
-    glTranslatef(.14f, .0f, .0f);
-    gluSphere(pObj, radius*0.02f, 50, 25);
-    cilinderRounded( pObj, radius*0.02f, radius*0.025f, 0.15f );
+                    glColor3f(1.0f, 1.0f, 1.0f);
+                    glTranslatef( .15f, .2f, .15f );
+                    gluSphere(pObj, radius*0.07f, 50, 25);
+                    glColor3f(.0f, .0f, .0f);
+                    glTranslatef( .0f, .03f, .03f );
+                    gluSphere(pObj, radius*0.04f, 50, 25);
 
-    glPopMatrix();
+                glPopMatrix();
 
-    glPushMatrix();
+                // olho direito
+                glPushMatrix();
 
-    // braço esquerdo
-    glColor3f(1.0f, 153.0/255.0f, 204.0/255.0f);
-    glTranslatef(.17f, -.38f, .0f);
-    glRotatef(90, .0f, 1.0f, .0f);
-    cilinderRounded( pObj, radius*0.013f, radius*0.013f, 0.17f );
-    glTranslatef(.0f, .0f, .12f);
-    glRotatef(45, 1.0f, .0f, .0f);
-    cilinderRounded( pObj, radius*0.013f, radius*0.013f, 0.03f );
-    glRotatef(-90, 1.0f, .0f, .0f);
-    cilinderRounded( pObj, radius*0.013f, radius*0.013f, 0.03f );
-    glRotatef(45, 1.0f, .0f, .0f);
+                    glColor3f(1.0f, 1.0f, 1.0f);
+                    glTranslatef( -.15f, .2f, .15f );
+                    gluSphere(pObj, radius*0.07f, 50, 25);
+                    glColor3f(.0f, .0f, .0f);
+                    glTranslatef( .0f, .03f, .03f );
+                    gluSphere(pObj, radius*0.04f, 50, 25);
+                
+                glPopMatrix();
 
-    // braço direito
-    glTranslatef(.0f, .0f, -.46f);
-    glRotatef(180, 1.0f, .0f, .0f);
-    cilinderRounded( pObj, radius*0.013f, radius*0.013f, 0.17f );
-    glTranslatef(.0f, .0f, .12f);
-    glRotatef(45, 1.0f, .0f, .0f);
-    cilinderRounded( pObj, radius*0.013f, radius*0.013f, 0.03f );
-    glRotatef(-90, 1.0f, .0f, .0f);
-    cilinderRounded( pObj, radius*0.013f, radius*0.013f, 0.03f );
-    glRotatef(45, 1.0f, .0f, .0f);
+                //orelha esquerda
+                glPushMatrix();
 
-    glPopMatrix();
+                    glColor3f(1.0f, 153.0/255.0f, 204.0/255.0f);
+                    glTranslatef( .07f, radius*0.25f, .0f );
+                    glRotatef(-90, 1.0f, 0.0f, 0.0f);
+                    cilinderRounded( pObj, radius*0.02f, radius*0.035f, 0.15f );
 
-    glPushMatrix();
+                glPopMatrix();
 
-    // olho esquerdo
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glTranslatef( .15f, .2f, .15f );
-    gluSphere(pObj, radius*0.07f, 50, 25);
-    glColor3f(.0f, .0f, .0f);
-    glTranslatef( .0f, .03f, .03f );
-    gluSphere(pObj, radius*0.04f, 50, 25);
+                //orelha direita
+                glPushMatrix();
 
-    // olho direito
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glTranslatef( -.3f, -.03f, -.03f );
-    gluSphere(pObj, radius*0.07f, 50, 25);
-    glColor3f(.0f, .0f, .0f);
-    glTranslatef( .0f, .03f, .03f );
-    gluSphere(pObj, radius*0.04f, 50, 25);
+                    glColor3f(1.0f, 153.0/255.0f, 204.0/255.0f);
+                    glTranslatef( -.07f, radius*0.25f, .0f );
+                    glRotatef(-90, 1.0f, 0.0f, 0.0f);
+                    cilinderRounded( pObj, radius*0.02f, radius*0.035f, 0.15f );
 
-    //orelha direita
-    glColor3f(1.0f, 153.0/255.0f, 204.0/255.0f);
-    glTranslatef( .07f, .0f, -.18f );
-    glRotatef(-90, 1.0f, .0f, .0f);
-    cilinderRounded( pObj, radius*0.02f, radius*0.035f, 0.15f );
-    glTranslatef( .16f, .0f, .0f );
-    cilinderRounded( pObj, radius*0.02f, radius*0.035f, 0.15f );
+                glPopMatrix();
 
-    glPopMatrix();
+                // boca
+                glPushMatrix();
 
-    glPushMatrix();
+                    glColor3f(.0f, .0f, .0f);
+                    glTranslatef( .0f, -.12f, .27f );
+                    gluDisk(pObj, 0.0, radius*0.1, 300, 90);
 
-    // boca
-    glColor3f(.0f, .0f, .0f);
-    glTranslatef( .0f, -.12f, .27f );
-    gluDisk(pObj, 0.0, radius*0.1, 300, 90);
+                glPopMatrix();
 
-    glPopMatrix();
+            glPopMatrix();
 
+            // perna esquerda
+            glPushMatrix();
 
-    // Restore the matrix state
-	// -1
+                glColor3f(1.0f, 153.0/255.0f, 204.0/255.0f);
+                glTranslatef(.07f, 0.0f, 0.4f);
+                gluCylinder(pObj, radius*0.025f, radius*0.015f, 0.13f, 50, 25);
+                
+                // pé
+                glPushMatrix();
+
+                    glColor3f(102.0/255.0f, 51.0/255.0f, 0.0f);
+                    glRotatef(-90, 1.0f, 0.0f, 0.0f);
+                    glTranslatef(.0f, -.13f, -.02f);
+                    gluSphere(pObj, radius*0.02f, 50, 25);
+                    cilinderRounded( pObj, radius*0.02f, radius*0.025f, 0.15f );
+
+                glPopMatrix();
+
+            glPopMatrix();
+
+            // perna direita
+            glPushMatrix();
+
+                glColor3f(1.0f, 153.0/255.0f, 204.0/255.0f);
+                glTranslatef(-.07f, 0.0f, 0.4f);
+                gluCylinder(pObj, radius*0.025f, radius*0.015f, 0.13f, 50, 25);
+                
+                // pé
+                glPushMatrix();
+
+                    glColor3f(102.0/255.0f, 51.0/255.0f, 0.0f);
+                    glRotatef(-90, 1.0f, 0.0f, 0.0f);
+                    glTranslatef(.0f, -.13f, -.02f);
+                    gluSphere(pObj, radius*0.02f, 50, 25);
+                    cilinderRounded( pObj, radius*0.02f, radius*0.025f, 0.15f );
+
+                glPopMatrix();
+
+            glPopMatrix();
+
+            // braço esquerdo
+            glPushMatrix();
+
+                glColor3f(1.0f, 153.0/255.0f, 204.0/255.0f);
+                glTranslatef(.17f, .0f, .12f);
+                glRotatef(90, .0f, 1.0f, .0f);
+                cilinderRounded( pObj, radius*0.013f, radius*0.013f, 0.17f );
+                glTranslatef(.0f, .0f, .12f);
+                glRotatef(45, 1.0f, .0f, .0f);
+                cilinderRounded( pObj, radius*0.013f, radius*0.013f, 0.03f );
+                glRotatef(-90, 1.0f, .0f, .0f);
+                cilinderRounded( pObj, radius*0.013f, radius*0.013f, 0.03f );
+                glRotatef(45, 1.0f, .0f, .0f);
+
+            glPopMatrix();
+
+            // braço direito
+            glPushMatrix();
+
+                glTranslatef(.0f, .0f, -.46f);
+                glRotatef(180, 1.0f, .0f, .0f);
+                cilinderRounded( pObj, radius*0.013f, radius*0.013f, 0.17f );
+                glTranslatef(.0f, .0f, .12f);
+                glRotatef(45, 1.0f, .0f, .0f);
+                cilinderRounded( pObj, radius*0.013f, radius*0.013f, 0.03f );
+                glRotatef(-90, 1.0f, .0f, .0f);
+                cilinderRounded( pObj, radius*0.013f, radius*0.013f, 0.03f );
+                glRotatef(45, 1.0f, .0f, .0f);
+
+            glPopMatrix();
+
+        glPopMatrix();
+
     glPopMatrix();
 	
     // Buffer swap
