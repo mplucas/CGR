@@ -1,4 +1,3 @@
-// Guilherme Xavier e Marcos Balatka
 // gcc snowman.c -lglut -lGL -lGLU -lm -o snowman && ./snowman
 
 #include <GL/glut.h>
