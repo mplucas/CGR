@@ -1,4 +1,4 @@
-// gcc main.c -lglut -lGL -lGLU -lm
+// g++ main.cpp -lglut -lGL -lGLU -lm; ./a.out
 #include <GL/glut.h>
 #include <stdlib.h>
 #include <time.h>
@@ -7,11 +7,17 @@
 #define MAX_FLOCOS 500
 #define PI 3.1415
 
-// gcc main.c -Wall -lGL -lGLU -lglut -lm
-
 // Rotation amounts
 static GLfloat xRot = 0.0f;
 static GLfloat yRot = 0.0f;
+static int grauBraco = 0;
+static bool subindo = true;
+static int opcao = -1;
+static float grauCabeca = 0;
+static bool animando = false;
+static bool animandoDireita = true;
+static bool voltandoCabeca = false;
+
 float radius = 1.0f;
 float angle = 0.0f;
 
@@ -79,6 +85,11 @@ void OnDisplay(void){
     GLUquadricObj *pObj = gluNewQuadric();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    if(opcao == '1'){
+        animando = true;
+        opcao = '0';
+    }
+
     // +1
     glPushMatrix();
 
@@ -102,6 +113,26 @@ void OnDisplay(void){
                 glTranslatef(0.0f, radius*0.25f, 0.0f);
                 glColor3f(1.0f, 153.0/255.0f, 204.0/255.0f);
                 gluSphere(pObj, radius*0.3f, 50, 25);
+
+                if(animando){
+
+                    if(animandoDireita){
+                        grauCabeca--;
+                        if(voltandoCabeca && grauCabeca == 0){
+                            animando = false;
+                            voltandoCabeca = false;
+                        }else if(grauCabeca == -30)
+                            animandoDireita = false;
+                    }else{
+                        grauCabeca++;
+                        if(grauCabeca == 20){
+                            voltandoCabeca = true;
+                            animandoDireita = true;
+                        }
+                    }
+
+                    glRotatef(grauCabeca, 1.0f, .0f, 0.0f);
+                }
 
                 // nariz
                 glPushMatrix();
@@ -222,29 +253,30 @@ void OnDisplay(void){
 
                 glColor3f(1.0f, 153.0/255.0f, 204.0/255.0f);
                 glTranslatef(.17f, .0f, .12f);
-                glRotatef(90, .0f, 1.0f, .0f);
+                glRotatef(90 + grauBraco, .0f, 1.0f, .0f);
                 cilinderRounded( pObj, radius*0.013f, radius*0.013f, 0.17f );
                 glTranslatef(.0f, .0f, .12f);
-                glRotatef(45, 1.0f, .0f, .0f);
+                glRotatef(45, .0f, 1.0f, .0f);
                 cilinderRounded( pObj, radius*0.013f, radius*0.013f, 0.03f );
-                glRotatef(-90, 1.0f, .0f, .0f);
+                glRotatef(-90, .0f, 1.0f, .0f);
                 cilinderRounded( pObj, radius*0.013f, radius*0.013f, 0.03f );
-                glRotatef(45, 1.0f, .0f, .0f);
+                glRotatef(45, .0f, 1.0f, .0f);
 
             glPopMatrix();
 
             // braço direito
             glPushMatrix();
 
-                glTranslatef(.0f, .0f, -.46f);
-                glRotatef(180, 1.0f, .0f, .0f);
+                glColor3f(1.0f, 153.0/255.0f, 204.0/255.0f);
+                glTranslatef(-.17f, .0f, .12f);
+                glRotatef(-90, .0f, 1.0f, .0f);
                 cilinderRounded( pObj, radius*0.013f, radius*0.013f, 0.17f );
                 glTranslatef(.0f, .0f, .12f);
-                glRotatef(45, 1.0f, .0f, .0f);
+                glRotatef(45, .0f, 1.0f, .0f);
                 cilinderRounded( pObj, radius*0.013f, radius*0.013f, 0.03f );
-                glRotatef(-90, 1.0f, .0f, .0f);
+                glRotatef(-90, .0f, 1.0f, .0f);
                 cilinderRounded( pObj, radius*0.013f, radius*0.013f, 0.03f );
-                glRotatef(45, 1.0f, .0f, .0f);
+                glRotatef(45, .0f, 1.0f, .0f);
 
             glPopMatrix();
 
@@ -258,7 +290,24 @@ void OnDisplay(void){
     yRot = (GLfloat)((const int)yRot % 360);
     yRot -= 1.0;
 
+    if(subindo){
+        grauBraco++;
+        if(grauBraco == 45)
+            subindo = false;
+    }else{
+        grauBraco--;
+        if(grauBraco == 0)
+            subindo = true;
+    }
+
+
+
     glutPostRedisplay();
+}
+
+void keyboard(unsigned char key, int x, int y)
+{
+	opcao = key;
 }
 
 
@@ -271,6 +320,7 @@ int main(int argc, char *argv[]){
     glutReshapeFunc(ChangeSize);
     glutSpecialFunc(SpecialKeys);
     glutDisplayFunc(OnDisplay);
+    glutKeyboardFunc(keyboard);
     init();
     glutMainLoop();
 
