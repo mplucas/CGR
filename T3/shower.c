@@ -6,7 +6,7 @@
 #include <math.h>
 #include <stdio.h>
 
-#define MAX_GOTAS 1000
+#define MAX_GOTAS 1500
 #define PI 3.1415
 
 // Rotation amounts
@@ -57,16 +57,16 @@ void ChangeSize(int w, int h) {
 
 
 void init(){
-    glEnable(GL_DEPTH_TEST);    
-    glFrontFace(GL_CCW);        
-    glEnable(GL_CULL_FACE);     
+    glEnable(GL_DEPTH_TEST);
+    glFrontFace(GL_CCW);
+    glEnable(GL_CULL_FACE);
     glEnable(GL_COLOR_MATERIAL);
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-    glClearColor(0.7f, 0.7f, 1.0f, 1.0f);
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	int i;
 	srand(time(NULL));
-	
+
 	for(i=0; i<MAX_GOTAS; i++){
 		// Gerar um x aleatorio
 		float x = (float) (rand() % 12)/100;
@@ -81,7 +81,7 @@ void init(){
 		gotas[i].pos[1] = y;
 		gotas[i].pos[2] = z;
 
-		float v = (float) (1.0 / ((rand() % 50) + 100));
+		float v = (float) (1.0 / ((rand() % 50) + 50));
 		gotas[i].vel = v;
 
 		printf("\nx: %f - y: %f - z: %f - v: %f", x,y,z,v);
@@ -111,7 +111,7 @@ void OnDisplay(void){
 
 	glRotatef(-90, 1.0f, 0.0f, 0.0f);
 	cilinderRounded( pObj, radius*0.02f, radius*0.02f, 1.0f );
-	
+
 	glRotatef(90, 1.0f, 0.0f, 0.0f);
 	cilinderRounded( pObj, radius*0.02f, radius*0.02f, 0.2f );
 
@@ -124,7 +124,7 @@ void OnDisplay(void){
 
 	glTranslatef(0.0f, 0.0f, 0.1f);
 	glRotatef(-90, 1.0f, 0.0f, 0.0f);
-	glColor3f(52.0/255.0f, 235.0/255.0f, 222.0/255.0f);	
+	glColor3f(52.0/255.0f, 235.0/255.0f, 222.0/255.0f);
 	int i;
 
 	//PAREI AQUI
@@ -153,12 +153,12 @@ void OnDisplay(void){
 	}
 	angle+=0.1f;
 	glPopMatrix();
-	
+
 	glPopMatrix();
 	// -2
-	
+
     glPopMatrix();
-	
+
     // Buffer swap
     glutSwapBuffers();
 
