@@ -1,0 +1,18 @@
+Para executar o arquivo é necessario instalar a versão 3 do
+Python, depois disso é necessário instalar a biblioteca
+Pygames para a execução do programa, para isso é
+necessario ter o pip instalado.
+Para instalar o pip se precisa abrir o terminal nessa pasta
+e executar o arquivo get-pip.py, ou seja, digitar:
+
+python3 get-pip.py --user
+
+depois disso é necessario baixar e instalar o Pygames com o
+pip com o codigo a seguir:
+
+python3 -m pip install -U pygame --user
+
+Depois disso é so executar o arquivo, ou seja, usar o codigo a
+seguir:
+
+python3 bez_her_but.py
