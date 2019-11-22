@@ -111,23 +111,23 @@ void plotCurve1(){
     vector<ponto2D> result = vector<ponto2D>();
     ponto2D p0, p1, p2, p3, p4, p5;
     
-    p0.x = 0;
-    p0.z = 0;
+    p0.x = -1.0;
+    p0.z = -2.0;
     
-    p1.x = 1;
-    p1.z = 1;
+    p1.x = 0.0;
+    p1.z = -1.0;
 
-    p2.x = 2;
-    p2.z = 2;
+    p2.x = 1.0;
+    p2.z = 0.0;
 
-    p3.x = 1;
-    p3.z = 3;
+    p3.x = 0.0;
+    p3.z = 1.0;
 
-    p4.x = -1;
-    p4.z = 5;
+    p4.x = -2.0;
+    p4.z = 3.0;
 
-    p5.x = 0.5;
-    p5.z = 7;
+    p5.x = 0.5-1;
+    p5.z = 5.0;
 
     GLfloat t = 0;
     GLfloat step = 0.1;
@@ -151,14 +151,14 @@ void plotCurve1(){
 
         result.push_back(aux);
         t += step;
-        printf("b %f", t);
     }
     
-    glBegin(GL_LINES);
+    printf("%d\n",result.size() );
+    glBegin(GL_LINE_STRIP);
     for(int i = 0; i < result.size(); i+=2){        
         glVertex3f(result[i].x, result[i].z, .0f);
         glVertex3f(result[i+1].x, result[i+1].z, .0f);
-        printf("c");
+        
     }
     glEnd();
 
@@ -208,7 +208,6 @@ void OnDisplay(void){
                 //     glVertex3f(0.1f, -1.3f, 0.2f);
                 // glEnd();
                 plotCurve1();
-                printf("a");
                 grauSweep++;
 
                 if(grauSweep == 360){
