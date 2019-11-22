@@ -153,11 +153,10 @@ void plotCurve1(){
         t += step;
     }
     
-    printf("%d\n",result.size() );
     glBegin(GL_LINE_STRIP);
     for(int i = 0; i < result.size(); i+=2){        
         glVertex3f(result[i].x, result[i].z, .0f);
-        glVertex3f(result[i+1].x, result[i+1].z, .0f);
+        /*glVertex3f(result[i+1].x, result[i+1].z, .0f);*/
         
     }
     glEnd();
