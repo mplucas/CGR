@@ -1,11 +1,13 @@
 // g++ main.cpp -lglut -lGL -lGLU -lm; ./a.out
 #include <GL/glut.h>
-#include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include<bits/stdc++.h>
 
 #define MAX_FLOCOS 500
 #define PI 3.1415
+
+using namespace std;
 
 // Rotation amounts
 static GLfloat xRot = 0.0f;
@@ -100,6 +102,69 @@ void cilinderRounded(GLUquadric* quad, GLdouble base, GLdouble top, GLdouble hei
 
 }
 
+typedef struct Ponto2D{
+    float x,z;
+} ponto2D;
+
+void plotCurve1(){
+
+    vector<ponto2D> result = vector<ponto2D>();
+    ponto2D p0, p1, p2, p3, p4, p5;
+    
+    p0.x = 0;
+    p0.z = 0;
+    
+    p1.x = 1;
+    p1.z = 1;
+
+    p2.x = 2;
+    p2.z = 2;
+
+    p3.x = 1;
+    p3.z = 3;
+
+    p4.x = -1;
+    p4.z = 5;
+
+    p5.x = 0.5;
+    p5.z = 7;
+
+    GLfloat t = 0;
+    GLfloat step = 0.1;
+
+    while( t <= (1 + step)){
+
+        ponto2D aux;
+
+        aux.x = pow(1 - t, 5) * p0.x + \
+                 5 * t * pow(1 - t, 4) * p1.x + \
+                 10 * t * t * pow(1 - t, 3) * p2.x + \
+                 10 * t * t * t * pow(1 - t, 2) * p3.x + \
+                 5 * t * t * t * t * (1 - t) * p4.x + \
+                 t * t * t * t * t * p5.x;
+        aux.z = pow(1 - t, 5) * p0.z + \
+                 5 * t * pow(1 - t, 4) * p1.z + \
+                 10 * t * t * pow(1 - t, 3) * p2.z + \
+                 10 * t * t * t * pow(1 - t, 2) * p3.z + \
+                 5 * t * t * t * t * (1 - t) * p4.z + \
+                 t * t * t * t * t * p5.z;
+
+        result.push_back(aux);
+        t += step;
+        printf("b %f", t);
+    }
+    
+    glBegin(GL_LINES);
+    for(int i = 0; i < result.size(); i+=2){        
+        glVertex3f(result[i].x, result[i].z, .0f);
+        glVertex3f(result[i+1].x, result[i+1].z, .0f);
+        printf("c");
+    }
+    glEnd();
+
+
+}
+
 void OnDisplay(void){
 
     GLUquadricObj *pObj = gluNewQuadric();
@@ -107,6 +172,10 @@ void OnDisplay(void){
     
     if(opcao == '1'){
         animando = true;
+        opcao = '0';
+    }
+    if(opcao == '2'){
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         opcao = '0';
     }
 
@@ -130,10 +199,16 @@ void OnDisplay(void){
                 glTranslatef(-0.0f, 0.0f, 0.0f);
                 // glRotatef(90, 1.0f, 0.0f, 0.0f);
                 // gluCylinder(pObj, radius*0.15f, radius*0.15f, 0.4f, 50, 25);
-                glBegin(GL_LINES);
-                    glVertex3f(0.f, 0.5f, 0.f);
-                    glVertex3f(0.f, -0.5f, 0.f);
-                glEnd();
+                // glBegin(GL_LINES);
+                //     glVertex3f(0.f, 0.5f, 0.f);
+                //     glVertex3f(0.f, -0.5f, 0.f);
+                //     glVertex3f(0.1f, -0.5f, 0.2f);
+                //     glVertex3f(0.f, -1.f, 0.1f);
+                //     glVertex3f(0.f, -0.3f, 0.2f);
+                //     glVertex3f(0.1f, -1.3f, 0.2f);
+                // glEnd();
+                plotCurve1();
+                printf("a");
                 grauSweep++;
 
                 if(grauSweep == 360){
@@ -151,7 +226,7 @@ void OnDisplay(void){
     glutSwapBuffers();
 
     yRot = (GLfloat)((const int)yRot % 360);
-    yRot -= 2.0;
+    yRot -= 1.;
 
     if(subindo){
         grauBraco++;
