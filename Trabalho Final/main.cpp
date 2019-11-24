@@ -10,18 +10,18 @@
 using namespace std;
 
 // Rotation amounts
-static GLfloat xRot = 0.0f;
-static GLfloat yRot = 0.0f;
-static int grauBraco = 0;
-static bool subindo = true;
-static int opcao = -1;
+static float xRot = 0.0f;
+static float yRot = 0.0f;
+static int opcao = '0';
 static float grauSweep = 0;
 static bool animando = false;
-static bool animandoDireita = true;
-static bool voltandoCabeca = false;
+static int refresh_times = 0;
+static float pointX = INT_MAX;
+static float pointY = INT_MAX;
 
 float radius = 1.0f;
 float angle = 0.0f;
+float minimizer = 0.2f;
 
 typedef struct floco {
 	float pos[3];
@@ -29,8 +29,6 @@ typedef struct floco {
 } Floco;
 
 Floco flocos[MAX_FLOCOS];
-
-
 
 double bezier(double A,  // Start value
               double B,  // First control value
@@ -46,9 +44,6 @@ double bezier(double A,  // Start value
     double BCD = BC*s + CD*t;
     return ABC*s + BCD*t;
 }
-
-
-
 
 // Change viewing volume and viewport.  Called when window is resized
 void ChangeSize(int w, int h) {
@@ -83,6 +78,16 @@ void init(){
     glEnable(GL_COLOR_MATERIAL);
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     glClearColor(102.0/255.0f, 204.0/255.0f, 1.0f, 1.0f);
+    
+    glClear(GL_COLOR_BUFFER_BIT);
+	
+	glViewport( 0,0, 500, 500 );
+	glMatrixMode( GL_PROJECTION );
+	glOrtho( 0.0, 500.0, 0.0, 500.0, 1.0, -1.0 );
+	
+	/* initialize viewing values */
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 }
 
 // Respond to arrow keys
@@ -103,7 +108,7 @@ void cilinderRounded(GLUquadric* quad, GLdouble base, GLdouble top, GLdouble hei
 }
 
 typedef struct Ponto2D{
-    float x,z;
+    float x,y;
 } ponto2D;
 
 void plotCurve1(){
@@ -112,22 +117,22 @@ void plotCurve1(){
     ponto2D p0, p1, p2, p3, p4, p5;
     
     p0.x = -1.0;
-    p0.z = -2.0;
+    p0.y = -2.0;
     
     p1.x = 0.0;
-    p1.z = -1.0;
+    p1.y = -1.0;
 
     p2.x = 1.0;
-    p2.z = 0.0;
+    p2.y = 0.0;
 
     p3.x = 0.0;
-    p3.z = 1.0;
+    p3.y = 1.0;
 
     p4.x = -2.0;
-    p4.z = 3.0;
+    p4.y = 3.0;
 
-    p5.x = 0.5-1;
-    p5.z = 5.0;
+    p5.x = -0.5;
+    p5.y = 5.0;
 
     GLfloat t = 0;
     GLfloat step = 0.1;
@@ -142,60 +147,57 @@ void plotCurve1(){
                  10 * t * t * t * pow(1 - t, 2) * p3.x + \
                  5 * t * t * t * t * (1 - t) * p4.x + \
                  t * t * t * t * t * p5.x;
-        aux.z = pow(1 - t, 5) * p0.z + \
-                 5 * t * pow(1 - t, 4) * p1.z + \
-                 10 * t * t * pow(1 - t, 3) * p2.z + \
-                 10 * t * t * t * pow(1 - t, 2) * p3.z + \
-                 5 * t * t * t * t * (1 - t) * p4.z + \
-                 t * t * t * t * t * p5.z;
+        aux.y = pow(1 - t, 5) * p0.y + \
+                 5 * t * pow(1 - t, 4) * p1.y + \
+                 10 * t * t * pow(1 - t, 3) * p2.y + \
+                 10 * t * t * t * pow(1 - t, 2) * p3.y + \
+                 5 * t * t * t * t * (1 - t) * p4.y + \
+                 t * t * t * t * t * p5.y;
+
+        aux.x *= minimizer;
+        aux.y *= minimizer;
 
         result.push_back(aux);
         t += step;
     }
     
-    glBegin(GL_LINE_STRIP);
-    for(int i = 0; i < result.size(); i+=2){        
-        glVertex3f(result[i].x, result[i].z, .0f);
-        /*glVertex3f(result[i+1].x, result[i+1].z, .0f);*/
-        
+    
+    glBegin(GL_LINE_STRIP);     
+    for(int i = 0; i < result.size(); i++){   
+        glVertex2f(result[i].x, result[i].y);
     }
     glEnd();
-
 
 }
 
 void OnDisplay(void){
-
-    GLUquadricObj *pObj = gluNewQuadric();
-    glClear(GL_DEPTH_BUFFER_BIT);
     
     if(opcao == '1'){
         animando = true;
-        opcao = '0';
+        opcao = '-1';
     }
-    if(opcao == '2'){
+    if(opcao == '0'){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        opcao = '0';
+        if(!--refresh_times)
+            opcao = '-1';
     }
 
-    // +1
-    glPushMatrix();
+    if(animando){
+        GLUquadricObj *pObj = gluNewQuadric();
+        glClear(GL_DEPTH_BUFFER_BIT);
 
-        // Move object back and do in place rotation
-        glTranslatef(0.0f, 0.0f, -5.0f);
-        glRotatef(xRot, 1.0f, 0.0f, 0.0f);
-        glRotatef(yRot, 0.0f, 1.0f, 0.0f);
+        // +1
+        glPushMatrix();
 
-        glColor3f(255.0f, .0f, .0f);
+            // Move object back and do in place rotation
+            glTranslatef(0.0f, -.5f, -5.0f);
+            glRotatef(xRot, 1.0f, 0.0f, 0.0f);
+            glRotatef(yRot, 0.0f, 1.0f, 0.0f);
 
-        glTranslatef(.5f, 0.0f, 0.0f);
-        
-        // teste
-        if(animando){
-
+            glColor3f(255.0f, .0f, .0f);
+                    
             glPushMatrix();
 
-                glTranslatef(-0.0f, 0.0f, 0.0f);
                 // glRotatef(90, 1.0f, 0.0f, 0.0f);
                 // gluCylinder(pObj, radius*0.15f, radius*0.15f, 0.4f, 50, 25);
                 // glBegin(GL_LINES);
@@ -207,43 +209,78 @@ void OnDisplay(void){
                 //     glVertex3f(0.1f, -1.3f, 0.2f);
                 // glEnd();
                 plotCurve1();
-                grauSweep++;
-
-                if(grauSweep == 360){
-                    animando = false;
-                    grauSweep = 0;
-                }
 
             glPopMatrix();
-
-        }  
-            
-    glPopMatrix();
-	
-    // Buffer swap
-    glutSwapBuffers();
-
-    yRot = (GLfloat)((const int)yRot % 360);
-    yRot -= 1.;
-
-    if(subindo){
-        grauBraco++;
-        if(grauBraco == 45)
-            subindo = false;
+                
+        glPopMatrix();
+        
+        yRot -= 0.3f;
+        if(yRot <= -360.0f){
+            yRot = 0;
+            animando = false;
+        }
     }else{
-        grauBraco--;
-        if(grauBraco == 0)
-            subindo = true;
+        GLUquadricObj *pObj = gluNewQuadric();
+        glClear(GL_DEPTH_BUFFER_BIT);
+
+        // +1
+        glPushMatrix();
+            
+            glColor3f(255.0f, .0f, .0f);
+
+            // Move object back and do in place rotation
+            glTranslatef(0.0f, .0f, -5.0f);
+
+            // testes
+            // gluSphere(pObj, radius*0.02f, 50, 25);
+            // glBegin(GL_LINE_STRIP);     
+            //     glVertex2f(0, 0);
+            //     glVertex2f(1, 1);
+            // glEnd();
+
+            if(pointX != INT_MAX){
+
+                glTranslatef(pointX, pointY, .0f);
+                gluSphere(pObj, radius*0.02f, 50, 25);
+                glTranslatef(-pointX, -pointY, .0f);
+
+            }
+                
+        glPopMatrix();
     }
 
-
+    // Buffer swap
+    glutSwapBuffers();
 
     glutPostRedisplay();
 }
 
+void drawPoint(int x, int y) {
+    // GLUquadricObj *pObj = gluNewQuadric();
+	//y = 250-y;
+	pointX = (x-400)*0.005f;
+	pointY = (300-y)*0.005f;
+    
+    printf("%f , %f\n", pointX, pointY);
+	//glFlush();
+}
+
+void mouse(int bin, int state , int x , int y) {
+	if(bin == GLUT_LEFT_BUTTON && state == GLUT_DOWN) drawPoint(x,y);
+}
+
 void keyboard(unsigned char key, int x, int y)
 {
+    // '-1' - nenhuma ação
+    // '0'  - refresh
+    // '1'  - curva 1
+    // '2'  - curva 2
+    // '3'  - curva 3
+    // '4'  - curva 4
+    // '5'  - curva 5
 	opcao = key;
+    if(key == '0')
+        refresh_times = 5;
 }
 
 
@@ -257,6 +294,7 @@ int main(int argc, char *argv[]){
     glutSpecialFunc(SpecialKeys);
     glutDisplayFunc(OnDisplay);
     glutKeyboardFunc(keyboard);
+    glutMouseFunc(mouse);
     init();
     glutMainLoop();
 
