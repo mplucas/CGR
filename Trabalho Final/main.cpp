@@ -19,31 +19,15 @@ static int refresh_times = 0;
 static float pointX = INT_MAX;
 static float pointY = INT_MAX;
 
+typedef struct Ponto2D{
+    float x,y;
+} ponto2D;
+
+static vector<ponto2D> pontos;
+
 float radius = 1.0f;
 float angle = 0.0f;
 float minimizer = 0.2f;
-
-typedef struct floco {
-	float pos[3];
-	float vel;
-} Floco;
-
-Floco flocos[MAX_FLOCOS];
-
-double bezier(double A,  // Start value
-              double B,  // First control value
-              double C,  // Second control value
-              double D,  // Ending value
-              double t)  // Parameter 0 <= t <= 1
-{
-    double s = 1 - t;
-    double AB = A*s + B*t;
-    double BC = B*s + C*t;
-    double CD = C*s + D*t;
-    double ABC = AB*s + BC*t;
-    double BCD = BC*s + CD*t;
-    return ABC*s + BCD*t;
-}
 
 // Change viewing volume and viewport.  Called when window is resized
 void ChangeSize(int w, int h) {
@@ -97,19 +81,6 @@ void SpecialKeys(int key, int x, int y){
 
 
 }
-
-void cilinderRounded(GLUquadric* quad, GLdouble base, GLdouble top, GLdouble height){
-
-	gluCylinder(quad, base, top, height, 50, 25);
-	glTranslatef(0.0f, 0.0f, height);
-	gluSphere(quad, top, 50, 25);
-    glTranslatef(0.0f, 0.0f, -height);
-
-}
-
-typedef struct Ponto2D{
-    float x,y;
-} ponto2D;
 
 void plotCurve1(){
 
@@ -170,9 +141,54 @@ void plotCurve1(){
 
 }
 
+void plotCurve2(){
+
+    vector<ponto2D> result = vector<ponto2D>();
+
+    GLfloat t = 0;
+    GLfloat step = 0.1;
+
+    while( t <= (1 + step)){
+
+        ponto2D aux;
+
+        aux.x = pow(1 - t, 5) * pontos[0].x + \
+                 5 * t * pow(1 - t, 4) * pontos[1].x + \
+                 10 * t * t * pow(1 - t, 3) * pontos[2].x + \
+                 10 * t * t * t * pow(1 - t, 2) * pontos[3].x + \
+                 5 * t * t * t * t * (1 - t) * pontos[4].x + \
+                 t * t * t * t * t * pontos[5].x;
+        aux.y = pow(1 - t, 5) * pontos[0].y + \
+                 5 * t * pow(1 - t, 4) * pontos[1].y + \
+                 10 * t * t * pow(1 - t, 3) * pontos[2].y + \
+                 10 * t * t * t * pow(1 - t, 2) * pontos[3].y + \
+                 5 * t * t * t * t * (1 - t) * pontos[4].y + \
+                 t * t * t * t * t * pontos[5].y;
+
+        // aux.x *= minimizer;
+        // aux.y *= minimizer;
+
+        result.push_back(aux);
+        t += step;
+    }
+    
+    
+    glBegin(GL_LINE_STRIP);     
+    for(int i = 0; i < result.size(); i++){   
+        glVertex2f(result[i].x, result[i].y);
+        // printf("%f , %f\n",result[i].x, result[i].y);
+    }
+    glEnd();
+
+}
+
 void OnDisplay(void){
     
     if(opcao == '1'){
+        animando = true;
+        opcao = '-1';
+    }
+    if(opcao == '2'){
         animando = true;
         opcao = '-1';
     }
@@ -190,7 +206,7 @@ void OnDisplay(void){
         glPushMatrix();
 
             // Move object back and do in place rotation
-            glTranslatef(0.0f, -.5f, -5.0f);
+            glTranslatef(0.0f, .0f, -5.0f);
             glRotatef(xRot, 1.0f, 0.0f, 0.0f);
             glRotatef(yRot, 0.0f, 1.0f, 0.0f);
 
@@ -208,7 +224,8 @@ void OnDisplay(void){
                 //     glVertex3f(0.f, -0.3f, 0.2f);
                 //     glVertex3f(0.1f, -1.3f, 0.2f);
                 // glEnd();
-                plotCurve1();
+                // plotCurve1();
+                plotCurve2();
 
             glPopMatrix();
                 
@@ -218,6 +235,7 @@ void OnDisplay(void){
         if(yRot <= -360.0f){
             yRot = 0;
             animando = false;
+            pontos.clear();
         }
     }else{
         GLUquadricObj *pObj = gluNewQuadric();
@@ -238,12 +256,38 @@ void OnDisplay(void){
             //     glVertex2f(1, 1);
             // glEnd();
 
+            // glBegin(GL_LINE_STRIP);
+            //     glVertex2f(0 , 0);
+            //     glVertex2f(pontos[i].x , pontos[i].y);
+            // glEnd();
+
             if(pointX != INT_MAX){
 
-                glTranslatef(pointX, pointY, .0f);
-                gluSphere(pObj, radius*0.02f, 50, 25);
-                glTranslatef(-pointX, -pointY, .0f);
+                ponto2D aux;
+                aux.x = pointX;
+                aux.y = pointY;
 
+                pontos.push_back(aux);
+
+                if(pontos.size() == 6){
+                    opcao = '2';
+                }
+
+                pointX = INT_MAX;
+                pointY = INT_MAX;
+            }
+
+            glBegin(GL_LINE_STRIP);
+            for(int i = 0; i < pontos.size(); i++){
+                glVertex2f(pontos[i].x , pontos[i].y);
+                // printf("%i\n",i);
+            }
+            glEnd();
+            
+            for(int i = 0; i < pontos.size(); i++){
+                glTranslatef(pontos[i].x, pontos[i].y, .0f);
+                gluSphere(pObj, radius*0.02f, 50, 25);
+                glTranslatef(-pontos[i].x, -pontos[i].y, .0f);
             }
                 
         glPopMatrix();
@@ -261,7 +305,7 @@ void drawPoint(int x, int y) {
 	pointX = (x-400)*0.005f;
 	pointY = (300-y)*0.005f;
     
-    printf("%f , %f\n", pointX, pointY);
+    // printf("%f , %f\n", pointX, pointY);
 	//glFlush();
 }
 
