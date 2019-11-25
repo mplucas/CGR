@@ -18,6 +18,9 @@ static bool animando = false;
 static int refresh_times = 0;
 static float pointX = INT_MAX;
 static float pointY = INT_MAX;
+static float colors[] = {255.0f,.0f,.0f};
+static int iColorDesc = 0;
+static float stepRot = 1.0f;
 
 typedef struct Ponto2D{
     float x,y;
@@ -210,7 +213,17 @@ void OnDisplay(void){
             glRotatef(xRot, 1.0f, 0.0f, 0.0f);
             glRotatef(yRot, 0.0f, 1.0f, 0.0f);
 
-            glColor3f(255.0f, .0f, .0f);
+            glColor3f(colors[0], colors[1], colors[2]);
+
+            colors[iColorDesc] -= stepRot;
+            colors[(iColorDesc + 1)%3] += stepRot;
+            if(colors[iColorDesc] <= 0){
+                iColorDesc = (iColorDesc + 1)%3;
+            }
+            for(int i = 0; i < 3; i++){
+                printf("%f ", colors[i]);
+            }
+            printf("\n");
                     
             glPushMatrix();
 
@@ -231,7 +244,7 @@ void OnDisplay(void){
                 
         glPopMatrix();
         
-        yRot -= 0.3f;
+        yRot -= stepRot;
         if(yRot <= -360.0f){
             yRot = 0;
             animando = false;
