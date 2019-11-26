@@ -213,10 +213,10 @@ void OnDisplay(void){
             glRotatef(xRot, 1.0f, 0.0f, 0.0f);
             glRotatef(yRot, 0.0f, 1.0f, 0.0f);
 
-            glColor3f(colors[0], colors[1], colors[2]);
+            glColor3f(colors[0]/255.0f, colors[1]/255.0f, colors[2]/255.0f);
 
-            colors[iColorDesc] -= stepRot;
-            colors[(iColorDesc + 1)%3] += stepRot;
+            colors[iColorDesc] -= 2.125f*stepRot;
+            colors[(iColorDesc + 1)%3] += 2.125f*stepRot;
             if(colors[iColorDesc] <= 0){
                 iColorDesc = (iColorDesc + 1)%3;
             }
