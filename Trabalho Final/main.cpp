@@ -59,19 +59,19 @@ void ChangeSize(int w, int h) {
 
 
 void init(){
-    glEnable(GL_DEPTH_TEST);    
+    glEnable(GL_DEPTH_TEST);
     glFrontFace(GL_CCW);
-    glEnable(GL_CULL_FACE);     
+    glEnable(GL_CULL_FACE);
     glEnable(GL_COLOR_MATERIAL);
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     glClearColor(102.0/255.0f, 204.0/255.0f, 1.0f, 1.0f);
-    
+
     glClear(GL_COLOR_BUFFER_BIT);
-	
+
 	glViewport( 0,0, 500, 500 );
 	glMatrixMode( GL_PROJECTION );
 	glOrtho( 0.0, 500.0, 0.0, 500.0, 1.0, -1.0 );
-	
+
 	/* initialize viewing values */
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -89,10 +89,10 @@ void plotCurve1(){
 
     vector<ponto2D> result = vector<ponto2D>();
     ponto2D p0, p1, p2, p3, p4, p5;
-    
+
     p0.x = -1.0;
     p0.y = -2.0;
-    
+
     p1.x = 0.0;
     p1.y = -1.0;
 
@@ -134,10 +134,10 @@ void plotCurve1(){
         result.push_back(aux);
         t += step;
     }
-    
-    
-    glBegin(GL_LINE_STRIP);     
-    for(int i = 0; i < result.size(); i++){   
+
+
+    glBegin(GL_LINE_STRIP);
+    for(int i = 0; i < result.size(); i++){
         glVertex2f(result[i].x, result[i].y);
     }
     glEnd();
@@ -174,10 +174,10 @@ void plotCurve2(){
         result.push_back(aux);
         t += step;
     }
-    
-    
-    glBegin(GL_LINE_STRIP);     
-    for(int i = 0; i < result.size(); i++){   
+
+
+    glBegin(GL_LINE_STRIP);
+    for(int i = 0; i < result.size(); i++){
         glVertex2f(result[i].x, result[i].y);
         // printf("%f , %f\n",result[i].x, result[i].y);
     }
@@ -186,23 +186,22 @@ void plotCurve2(){
 }
 
 void OnDisplay(void){
-    
+
     if(opcao == '1'){
         animando = true;
-        opcao = '-1';
-    }
-    if(opcao == '2'){
-        animando = true;
-        opcao = '-1';
+        opcao = 'n';
     }
     if(opcao == '0'){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        if(!--refresh_times)
-            opcao = '-1';
+        if(!--refresh_times){
+          pontos.clear();
+          opcao = 'n';
+        }
     }
 
+    GLUquadricObj *pObj = gluNewQuadric();
+
     if(animando){
-        GLUquadricObj *pObj = gluNewQuadric();
         glClear(GL_DEPTH_BUFFER_BIT);
 
         // +1
@@ -224,7 +223,7 @@ void OnDisplay(void){
                 printf("%f ", colors[i]);
             }
             printf("\n");
-                    
+
             glPushMatrix();
 
                 // glRotatef(90, 1.0f, 0.0f, 0.0f);
@@ -241,9 +240,9 @@ void OnDisplay(void){
                 plotCurve2();
 
             glPopMatrix();
-                
+
         glPopMatrix();
-        
+
         yRot -= stepRot;
         if(yRot <= -360.0f){
             yRot = 0;
@@ -251,12 +250,11 @@ void OnDisplay(void){
             pontos.clear();
         }
     }else{
-        GLUquadricObj *pObj = gluNewQuadric();
         glClear(GL_DEPTH_BUFFER_BIT);
 
         // +1
         glPushMatrix();
-            
+
             glColor3f(255.0f, .0f, .0f);
 
             // Move object back and do in place rotation
@@ -264,7 +262,7 @@ void OnDisplay(void){
 
             // testes
             // gluSphere(pObj, radius*0.02f, 50, 25);
-            // glBegin(GL_LINE_STRIP);     
+            // glBegin(GL_LINE_STRIP);
             //     glVertex2f(0, 0);
             //     glVertex2f(1, 1);
             // glEnd();
@@ -282,8 +280,8 @@ void OnDisplay(void){
 
                 pontos.push_back(aux);
 
-                if(pontos.size() == 6){
-                    opcao = '2';
+                while(pontos.size() > 6){
+                    pontos.erase(pontos.begin());
                 }
 
                 pointX = INT_MAX;
@@ -296,13 +294,13 @@ void OnDisplay(void){
                 // printf("%i\n",i);
             }
             glEnd();
-            
+
             for(int i = 0; i < pontos.size(); i++){
                 glTranslatef(pontos[i].x, pontos[i].y, .0f);
                 gluSphere(pObj, radius*0.02f, 50, 25);
                 glTranslatef(-pontos[i].x, -pontos[i].y, .0f);
             }
-                
+
         glPopMatrix();
     }
 
@@ -317,7 +315,7 @@ void drawPoint(int x, int y) {
 	//y = 250-y;
 	pointX = (x-400)*0.005f;
 	pointY = (300-y)*0.005f;
-    
+
     // printf("%f , %f\n", pointX, pointY);
 	//glFlush();
 }
@@ -328,15 +326,12 @@ void mouse(int bin, int state , int x , int y) {
 
 void keyboard(unsigned char key, int x, int y)
 {
-    // '-1' - nenhuma ação
+    // 'n' - nenhuma ação
     // '0'  - refresh
-    // '1'  - curva 1
-    // '2'  - curva 2
-    // '3'  - curva 3
-    // '4'  - curva 4
-    // '5'  - curva 5
+    // '1'  - sweep rotacional
+    // '2'  - sweep translacional
 	opcao = key;
-    if(key == '0')
+    if(opcao == '0')
         refresh_times = 5;
 }
 
