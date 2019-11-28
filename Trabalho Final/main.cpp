@@ -179,7 +179,6 @@ void plotCurve2(){
     glBegin(GL_LINE_STRIP);
     for(int i = 0; i < result.size(); i++){
         glVertex2f(result[i].x, result[i].y);
-        // printf("%f , %f\n",result[i].x, result[i].y);
     }
     glEnd();
 
@@ -219,10 +218,6 @@ void OnDisplay(void){
             if(colors[iColorDesc] <= 0){
                 iColorDesc = (iColorDesc + 1)%3;
             }
-            for(int i = 0; i < 3; i++){
-                printf("%f ", colors[i]);
-            }
-            printf("\n");
 
             glPushMatrix();
 
@@ -291,7 +286,6 @@ void OnDisplay(void){
             glBegin(GL_LINE_STRIP);
             for(int i = 0; i < pontos.size(); i++){
                 glVertex2f(pontos[i].x , pontos[i].y);
-                // printf("%i\n",i);
             }
             glEnd();
 
@@ -311,13 +305,10 @@ void OnDisplay(void){
 }
 
 void drawPoint(int x, int y) {
-    // GLUquadricObj *pObj = gluNewQuadric();
-	//y = 250-y;
+
 	pointX = (x-400)*0.005f;
 	pointY = (300-y)*0.005f;
 
-    // printf("%f , %f\n", pointX, pointY);
-	//glFlush();
 }
 
 void mouse(int bin, int state , int x , int y) {

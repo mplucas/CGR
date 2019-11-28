@@ -1,4 +1,4 @@
-// g++ main.cpp -lglut -lGL -lGLU -lm; ./a.out
+// g++ main2.cpp -lglut -lGL -lGLU -lm; ./a.out
 #include <GL/glut.h>
 #include <time.h>
 #include <math.h>
@@ -223,7 +223,6 @@ void OnDisplay(void){
             }
 
             rotate();
-            printf("aaaaaaa");
 
         glPopMatrix();
     }
@@ -235,13 +234,10 @@ void OnDisplay(void){
 }
 
 void drawPoint(int x, int y) {
-    // GLUquadricObj *pObj = gluNewQuadric();
-	//y = 250-y;
+
 	pointX = (x-400)*0.005f;
 	pointY = (300-y)*0.005f;
 
-    // printf("%f , %f\n", pointX, pointY);
-	//glFlush();
 }
 
 void mouse(int bin, int state , int x , int y) {
