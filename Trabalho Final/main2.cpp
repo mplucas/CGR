@@ -138,13 +138,17 @@ void rotate(){
 
 void translate(){
 
-    float h = 0.1f;
+    float h = 0.25f;
+    float total = 0;
 
     for(int i = 0; i < translations.size(); i++){
-        glPushMatrix();
-            glTranslatef(0.0f, .0f, -5.0f);
-            plotBezier();
-        glPopMatrix();
+        while(total <= 1){
+            glPushMatrix();
+                glTranslatef(translations[i].x*h, translations[i].y*h, translations[i].z*h);
+                rotate();
+            glPopMatrix();
+            total += h;
+        }
     }
 
 }
